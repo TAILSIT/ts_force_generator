@@ -13,7 +13,6 @@
 //! @author    Lars Kielhorn, Thomas Rüberg, Jürgen Zechner
 //! @date      2024
 //! @copyright TailSiT GmbH
-#pragma once
 
 // system ----------------------------------------------------------------------
 #include <algorithm>
@@ -25,25 +24,10 @@
 //------------------------------------------------------------------------------
 namespace ts {
 
-  
-//  std::vector<Real>         coords_;
-//  std::vector<Real>         currentDisplacements_;
-//  Settings                  settings_;
-//  Real                      currentTime_;
-//  std::array<Real,dimMesh_> solution_; // well, not really a solution just the evaluated force
-//
-//  struct SavedState_
-//  {
-//    std::vector<Real>         displacements;
-//    std::array<Real,dimMesh_> solution;
-//    Real                      time;
-//  };
-//  std::unique_ptr<SavedState_> previousState_;
-
   //----------------------------------------------------------------------------
   ForceGenerator::ForceGenerator( std::span<const Real> coords,
                                   const Settings&       settings )
-    : coords_(coords)
+    : coords_(coords.begin(),coords.end())
     , currentDisplacements_( coords_.size(), 0 )
     , settings_(settings)
     , currentTime_(0)
@@ -59,12 +43,16 @@ namespace ts {
     std::ranges::fill( solution_, 0 );    
   }
 
-  void stop( );
+  //----------------------------------------------------------------------------
+  void ForceGenerator::stop( )
+  {
+    // nothing to do here...
+  }
 
   //----------------------------------------------------------------------------
   bool ForceGenerator::isRunning( ) const
   {
-    return currentTime_ <= settings.endt;
+    return currentTime_ <= settings_.endt;
   }
 
   //----------------------------------------------------------------------------

@@ -23,7 +23,6 @@
 
 // own -------------------------------------------------------------------------
 #include "types.hpp"
-#include "Force.hpp"
 #include "Settings.hpp"
 
 //------------------------------------------------------------------------------
@@ -105,6 +104,6 @@ void ts::ForceGenerator::solveTimeStep( FORCE&& force )
   // this is all about rigid body movement (without rotations!)
   // Thus, the very first displacement is as good as any other
   auto U = std::span<const Real,3>{ currentDisplacements_.data(), dimMesh_ };
-  force( t, U, solution_ );
+  force( currentTime_, U, solution_ );
 }
 

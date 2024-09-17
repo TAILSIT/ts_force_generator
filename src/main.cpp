@@ -13,20 +13,18 @@
 //! @author    Lars Kielhorn, Thomas Rüberg, Jürgen Zechner
 //! @date      2024
 //! @copyright TailSiT GmbH
-#pragma once
+
+// system ----------------------------------------------------------------------
+#include <cstdlib>
 
 // own -------------------------------------------------------------------------
 #include "types.hpp"
+#include "ForceGenerator.hpp"
+#include "Settings.hpp"
 
 //------------------------------------------------------------------------------
-namespace ts
+int main( int argc, char* argv[] )
 {
-
-  //----------------------------------------------------------------------------
-  struct Settings
-  {
-    Real dt;
-    Real endt;
-  };
-
+  
+  return EXIT_SUCCESS;
 }
