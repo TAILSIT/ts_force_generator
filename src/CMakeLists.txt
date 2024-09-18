@@ -14,7 +14,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# nothing works without preCICE
+find_package( precice REQUIRED CONFIG )
+
+
 # Add the executable
-add_executable( ts_adaptor
+add_executable( ts_dummy_adaptor
   main.cpp
   ForceGenerator.cpp )
+
+target_link_libraries( ts_dummy_adaptor PRIVATE precice::precice )
