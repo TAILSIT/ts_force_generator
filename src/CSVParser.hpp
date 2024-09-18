@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 #include <array>
+#include <iterator>
 
 // own -------------------------------------------------------------------------
 #include "types.hpp"
