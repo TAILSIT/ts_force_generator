@@ -1,0 +1,50 @@
+*HEADING
+Rigid Body Free Fall of a magnet [according to Lenz]
+
+*INCLUDE, input=ccxMesh.inp
+
+*MATERIAL, NAME=RigidBodyMat
+*ELASTIC
+2e11, 0.25
+*DENSITY
+7459
+
+*ELSET, elset=MagnetVol
+Volume5
+Volume6
+Volume7
+Volume8
+Volume9
+
+*NSET, NSET=NmagnetSurfaceN
+North
+South
+Coating
+
+*SOLID SECTION, ELSET=MagnetVol, MATERIAL=RigidBodyMat
+
+*RIGID BODY, elset=MagnetVol, refnode=625
+
+*STEP,NLGEOM=NO,INC=10000
+
+*BOUNDARY
+625, 1, 2
+
+*DLOAD
+MagnetVol, GRAV, 9.81, 0.0, 0.0, -1.0 
+
+*CLOAD
+NmagnetSurfaceN, 1, 0.0
+NmagnetSurfaceN, 2, 0.0
+NmagnetSurfaceN, 3, 0.0
+
+*DYNAMIC, DIRECT
+5e-3, 3e-1
+
+*NODE FILE
+U, V, RF
+*EL FILE
+S, E
+
+*END STEP
+

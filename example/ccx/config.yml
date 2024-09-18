@@ -1,0 +1,9 @@
+participants:
+  ccx:
+    interfaces:
+      - nodes-mesh: magnetSurface
+        patch: magnetSurface
+        read-data: [Forces]
+        write-data: [Displacements]
+
+precice-config-file: ../lenz.xml

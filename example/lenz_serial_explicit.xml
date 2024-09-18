@@ -1,0 +1,81 @@
+<precice-configuration>
+  <!--
+      THE INVOLVED DATA: FORCES ON THE EM-SIDE, DISPLACEMENTS IN STRUCTURES
+  -->
+  <data:vector name="Forces"/>
+  <data:vector name="Displacements"/>
+  <!--
+      DECLARE COUPLING MESHES
+  -->
+  <mesh name="magnetSurface" dimensions="3">
+    <use-data name="Displacements"/>
+    <use-data name="Forces"/>
+  </mesh>
+  <mesh name="dummy_magnet" dimensions="3">
+    <use-data name="Displacements"/>
+    <use-data name="Forces"/>
+  </mesh>
+  <!--
+      OUR FIRST PARTICIPANT: THE EM SOLVER
+  -->
+  <participant name="ts_dummy_solver">
+    <!--
+        TWO REGIONS (Copper rod, magnet) -> FOUR GRIDS!!!
+    -->
+    <provide-mesh name="dummy_magnet"/>
+    <!--
+        THE EM SOLVER WRITES ITS DATA TO THE SURFACE MESHES
+    -->
+    <write-data name="Forces" mesh="dummy_magnet"/>
+    <!--
+        ...AND READ THE DISPLACEMENTS FOR THE VOLUMES
+    -->
+    <read-data name="Displacements" mesh="dummy_magnet"/>
+    <!--
+        MAKE MESHES FROM OTHER SOLVER VISIBLE
+    -->
+    <receive-mesh name="magnetSurface" from="ccx"/>
+    <!--
+        DEFINE DATA MAPPING 
+    -->
+    <mapping:nearest-neighbor direction="read" from="magnetSurface"
+                              to="dummy_magnet" constraint="consistent"/>
+    <mapping:nearest-neighbor direction="write" from="dummy_magnet"
+                              to="magnetSurface" constraint="conservative"/>
+  </participant>
+  <!--
+      OUR SECOND PARTICIPANT: THE RIGID BODY SOLVER
+  -->    
+  <participant name="ccx">
+    <!--
+        ONE REGION (magnet) -> TWO GRIDS!!!
+    -->
+    <provide-mesh name="magnetSurface"/>
+    
+    <!--
+        THE RBD SOLVER WRITES ITS DATA TO THE VOLUME MESHES
+    -->
+    <write-data name="Displacements" mesh="magnetSurface"/>
+    <!--
+        ...AND READS THE FORCES ONTO ITS SURFACES
+    -->
+    <read-data name="Forces" mesh="magnetSurface"/>
+  </participant>
+  <!--
+      SET UP THE COMMUNICATION CHANNEL BETWEEN THESE TWO PARTICIPANTS
+  -->
+  <m2n:sockets acceptor="ts_dummy_solver" connector="ccx" exchange-directory="../"/>
+  <!--
+      FINALLY: THE COUPLING SCHEME
+  -->
+  <coupling-scheme:serial-explicit>
+    <participants first="ts_dummy_solver" second="ccx"/>
+    <max-time-windows value="1000"/>
+    <time-window-size value="5e-3"/>
+    <max-time value="3e-1"/>
+    <exchange data="Forces" mesh="magnetSurface"
+              from="ts_dummy_solver" to="ccx"/>
+    <exchange data="Displacements" mesh="magnetSurface"
+              from="ccx" to="ts_dummy_solver"/>
+  </coupling-scheme:serial-explicit>
+</precice-configuration>
