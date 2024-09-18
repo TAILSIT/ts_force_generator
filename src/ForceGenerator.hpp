@@ -56,6 +56,12 @@ public:
   ForceGenerator( std::span<const Real> coords,
                   const Settings& settings );
 
+
+  /** @name static data */
+  //@{
+  static constexpr SizeT dim() { return dimMesh_; }
+  //@}
+  
   /** @name solver controls */
   //@{
   void start( );
