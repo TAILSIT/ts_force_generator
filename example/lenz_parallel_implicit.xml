@@ -18,7 +18,7 @@
   <!--
       OUR FIRST PARTICIPANT: THE EM SOLVER
   -->
-  <participant name="ts_dummy_solver">
+  <participant name="ts_dummy_adapter">
     <!--
         TWO REGIONS (Copper rod, magnet) -> FOUR GRIDS!!!
     -->
@@ -64,12 +64,12 @@
   <!--
       SET UP THE COMMUNICATION CHANNEL BETWEEN THESE TWO PARTICIPANTS
   -->
-  <m2n:sockets acceptor="ts_dummy_solver" connector="ccx" exchange-directory="../"/>
+  <m2n:sockets acceptor="ts_dummy_adapter" connector="ccx" exchange-directory="../"/>
   <!--
       FINALLY: THE COUPLING SCHEME
   -->
   <coupling-scheme:parallel-implicit>
-    <participants first="ts_dummy_solver" second="ccx"/>
+    <participants first="ts_dummy_adapter" second="ccx"/>
     <max-time-windows value="1000"/>
     <time-window-size value="5e-3"/>
     <max-iterations value="100"/>
@@ -81,9 +81,9 @@
                                   mesh="magnetSurface"/>
     <max-time value="3e-1"/>
     <exchange data="Forces" mesh="magnetSurface"
-              from="ts_dummy_solver" to="ccx"/>
+              from="ts_dummy_adapter" to="ccx"/>
     <exchange data="Displacements" mesh="magnetSurface"
-              from="ccx" to="ts_dummy_solver"/>
+              from="ccx" to="ts_dummy_adapter"/>
     <acceleration:IQN-ILS>
       <data name="Displacements" mesh="magnetSurface"/>
       <data name="Forces" mesh="magnetSurface"/>

@@ -1,0 +1,6 @@
+#!/bin/bash
+BASE=$1
+
+rm -rf $BASE/precice-run
+rm -rf $BASE/em/precice-*
+rm -rf $BASE/rigid/precice-*
