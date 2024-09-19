@@ -86,9 +86,9 @@ public:
 
   /** @name set displacements / get forces ... nothing else */
   //@{
-  void setDisplacements( std::span<const Real> displacements );
+  void set( std::string_view fieldname, std::span<const Real> displacements );
   
-  void getForces( std::span<Real> forces ) const;
+  void get( std::string_view fieldname, std::span<Real> forces ) const;
   //@}
 
   /** @name save/load state [for implicit schemes] */

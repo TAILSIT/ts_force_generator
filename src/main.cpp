@@ -35,15 +35,6 @@
 namespace app {
 
   //----------------------------------------------------------------------------
-  struct XMLNames
-  {
-    static constexpr std::string_view solver        = "ts_dummy_adapter";
-    static constexpr std::string_view mesh          = "dummy_magnet";
-    static constexpr std::string_view displacements = "Displacements";
-    static constexpr std::string_view forces        = "Forces";
-  }; 
-    
-  //----------------------------------------------------------------------------
   struct DummyForce
   {
     static constexpr ts::SizeT dim = 3;
@@ -141,13 +132,13 @@ int main( int argc, char* argv[] )
                       displacementBuffer );
 
     // pass data to solver
-    solver.setDisplacements( displacementBuffer );
+    solver.set( settings.inField, displacementBuffer );
 
     // 'solve' for this time step
     solver.solveTimeStep( force );
 
     // fetch forces on points from solver
-    solver.getForces( forcesBuffer );
+    solver.get( settings.outField, forcesBuffer );
 
     // pass forces to precice
     precice.writeData( settings.meshName,

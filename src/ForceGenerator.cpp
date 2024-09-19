@@ -28,7 +28,7 @@ namespace ts {
   ForceGenerator::ForceGenerator( std::span<const Real> coords,
                                   const Settings&       settings )
     : coords_(coords.begin(),coords.end())
-    , currentDisplacements_( coords_.size(), 0 )
+    , currentDisplacements_( coords_.size() )
     , settings_(settings)
     , currentTime_(0)
     , solution_()
@@ -40,7 +40,8 @@ namespace ts {
   //----------------------------------------------------------------------------
   void ForceGenerator::start( )
   {
-    std::ranges::fill( solution_, 0 );    
+    std::ranges::fill( solution_, 0 );
+    std::ranges::fill( currentDisplacements_, 0 );
   }
 
   //----------------------------------------------------------------------------
@@ -80,14 +81,33 @@ namespace ts {
   }
 
   //----------------------------------------------------------------------------
-  void ForceGenerator::setDisplacements( std::span<const Real> displacements )
+  void ForceGenerator::set( std::string_view fieldname,
+                            std::span<const Real> displacements )
   {
-    std::ranges::copy( displacements, currentDisplacements_.begin() );
+    if( fieldname != "Displacements" && fieldname != "DisplacementDeltas" ) {
+      const std::string msg =
+        "ts::ForceGenerator::set::fieldname '" + std::string{fieldname} + "' is invalid";
+      throw std::runtime_error(msg);
+    }
+    if( fieldname == "Displacement" )
+      std::ranges::copy( displacements, currentDisplacements_.begin() );
+    else
+      std::ranges::transform( displacements,
+                              currentDisplacements_,
+                              currentDisplacements_.begin(),
+                              []( auto dU, auto Unm1 ) { return dU + Unm1; } );
   }
 
   //----------------------------------------------------------------------------
-  void ForceGenerator::getForces( std::span<Real> forces ) const
+  void ForceGenerator::get( std::string_view fieldname,
+                            std::span<Real>  forces ) const
   {
+    if( fieldname != "Forces" ) {
+      const std::string msg =
+        "ts::ForceGenerator::get::fieldname '" + std::string{fieldname} + "' is invalid";
+      throw std::runtime_error(msg);
+    }
+
     const SizeT numForces = forces.size() / dimMesh_;
     if( numForces * dimMesh_ - forces.size() != 0 )
       throw std::runtime_error( "ForceGenerator::getForces():Invalid size" );
