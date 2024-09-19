@@ -16,11 +16,26 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # nothing works without preCICE
 find_package( precice REQUIRED CONFIG )
+find_package( yaml-cpp REQUIRED )
+
+## Older yaml-cpp builds do not configure the default import target, so go for it:
+if( NOT TARGET yaml-cpp::yaml-cpp )
+  if( TARGET yaml-cpp )
+    add_library( yaml-cpp::yaml-cpp ALIAS yaml-cpp )
+  else()
+    message( FATAL_ERROR "Could not configure yaml-cpp" )
+  endif()
+endif()
 
 
 # Add the executable
-add_executable( ts_dummy_adaptor
+set( APPNAME ts_dummy_adaptor )
+add_executable( ${APPNAME}
   main.cpp
-  ForceGenerator.cpp )
+  ForceGenerator.cpp
+  yaml/Settings.cpp
+  yaml/parse.cpp )
 
-target_link_libraries( ts_dummy_adaptor PRIVATE precice::precice )
+target_link_libraries(
+  ${APPNAME}
+  PRIVATE precice::precice yaml-cpp::yaml-cpp )

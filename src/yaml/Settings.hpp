@@ -15,25 +15,21 @@
 //! @copyright TailSiT GmbH
 #pragma once
 
-// system ----------------------------------------------------------------------
-#include <string>
+// yaml-cpp --------------------------------------------------------------------
+#include <yaml-cpp/yaml.h>
 
 // own -------------------------------------------------------------------------
-#include "types.hpp"
+#include "../Settings.hpp"
 
 //------------------------------------------------------------------------------
-namespace ts
-{
+namespace YAML {
 
   //----------------------------------------------------------------------------
-  struct Settings
+  template< >
+  struct convert< ts::Settings >
   {
-    std::string solverName = "ts_dummy_adapter";
-    std::string meshName   = "dummy_magnet";
-    std::string inField    = "Displacements";
-    std::string outField   = "Forces";
-    Real        dt         = 5e-3;
-    Real        endt       = 3e-1;
+    static Node encode( const ts::Settings& );
+    static bool decode( const Node&, ts::Settings& );
   };
   
-}
+} // end namespace YAML

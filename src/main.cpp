@@ -29,7 +29,7 @@
 #include "ForceGenerator.hpp"
 #include "Settings.hpp"
 #include "CSVParser.hpp"
-
+#include "yaml/parse.hpp"
 
 //------------------------------------------------------------------------------
 namespace app {
@@ -52,12 +52,13 @@ namespace app {
                      std::span<const ts::Real,dim> U,
                      std::span<ts::Real>           Feval ) const
     {
-      static constexpr ts::Real thresholdZ = 0.07;
+      static constexpr ts::Real thresholdBegZ = -0.038;
+      static constexpr ts::Real thresholdEndZ = -0.08;
       std::ranges::fill( Feval, 0 );
-      if( U[2] >= thresholdZ ) {
+      if( U[2] <= thresholdBegZ && U[2] >= thresholdEndZ ) {
         static constexpr ts::Real mass = 6e-3; // the magnet's mass is 6 gramms
         static constexpr ts::Real grav = 9.81; 
-        static constexpr ts::Real fz = mass * grav;
+        static constexpr ts::Real fz   = mass * grav;
         Feval[2] = fz;
       }
     }
@@ -68,8 +69,8 @@ namespace app {
 //------------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
-  if( argc != 3 ) {
-    std::cerr << "usage: " << std::filesystem::path(argv[0]).filename().string() << " coords.csv settings-precice.xml"
+  if( argc != 4 ) {
+    std::cerr << "usage: " << std::filesystem::path(argv[0]).filename().string() << " coords.csv settings-precice.xml config.yaml"
               << std::endl;
     std::exit( EXIT_FAILURE );
   }
@@ -79,20 +80,25 @@ int main( int argc, char* argv[] )
    */
   const std::filesystem::path csvFile( argv[1] );
   const std::filesystem::path xmlFile( argv[2] );
+  const std::filesystem::path yamlFile( argv[3] );
 
+  /*
+   * parse settings from config yaml
+   */
+  const ts::Settings settings = ts::yaml::parse(yamlFile);
+  
   /*
    * instantiate dummy solver with point cloud
    */
   static constexpr auto numColsInCSV = 3;
-  ts::ForceGenerator solver( ts::CSVParser<numColsInCSV>()( csvFile ),
-                             ts::Settings{ .dt = 5e-3, .endt = 3e-1 } );
+  ts::ForceGenerator solver( ts::CSVParser<numColsInCSV>()( csvFile ), settings );
   
   /*
    * instantiate precice
    */
   static constexpr auto rank = 0;
   static constexpr auto size = 1;
-  precice::Participant precice( app::XMLNames::solver, xmlFile.string(), rank, size );
+  precice::Participant precice( settings.solverName, xmlFile.string(), rank, size );
 
   /*
    * initialization
@@ -106,7 +112,7 @@ int main( int argc, char* argv[] )
 
   solver.getCoordinates( coords );
 
-  precice.setMeshVertices( app::XMLNames::mesh, coords, vertexIds );
+  precice.setMeshVertices( settings.meshName, coords, vertexIds );
 
   precice.initialize();
 
@@ -128,8 +134,8 @@ int main( int argc, char* argv[] )
     const ts::Real dt        = std::min( preciceDt, solverDt );
 
     // read data
-    precice.readData( app::XMLNames::mesh,
-                      app::XMLNames::displacements,
+    precice.readData( settings.meshName,
+                      settings.inField,
                       vertexIds,
                       dt,
                       displacementBuffer );
@@ -144,8 +150,8 @@ int main( int argc, char* argv[] )
     solver.getForces( forcesBuffer );
 
     // pass forces to precice
-    precice.writeData( app::XMLNames::mesh,
-                       app::XMLNames::forces,
+    precice.writeData( settings.meshName,
+                       settings.outField,
                        vertexIds,
                        forcesBuffer );
 

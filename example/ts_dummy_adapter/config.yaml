@@ -1,0 +1,8 @@
+settings:
+  solverName: "ts_dummy_adapter"
+  meshName: "dummy_magnet"
+  inField: "Displacements"
+  outField: "Forces"
+  dt: 5.e-3
+  endt: 3.e-1
+
