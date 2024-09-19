@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <format>
 #include <algorithm>
+#include <cmath>
 
 // preCICE ---------------------------------------------------------------------
 #include <precice/precice.hpp>
@@ -38,20 +39,21 @@ namespace app {
   struct DummyForce
   {
     static constexpr ts::SizeT dim = 3;
+
+    ts::Real eval( ts::Real s ) const
+    {
+      const auto e1 = std::exp(20. - 1000.*s);
+      const auto e2 = std::exp(25. - 1000.*s);
+      const auto e3 = std::exp(85. - 1000.*s);
+      return 2./(1.+e1) - 1./(1.+e2) - 1./(1.+e3);
+    }
     
     void operator()( ts::Real                      time,
                      std::span<const ts::Real,dim> U,
                      std::span<ts::Real>           Feval ) const
     {
-      static constexpr ts::Real thresholdBegZ = -0.038;
-      static constexpr ts::Real thresholdEndZ = -0.08;
       std::ranges::fill( Feval, 0 );
-      if( U[2] <= thresholdBegZ && U[2] >= thresholdEndZ ) {
-        static constexpr ts::Real mass = 6e-3; // the magnet's mass is 6 gramms
-        static constexpr ts::Real grav = 9.81; 
-        static constexpr ts::Real fz   = mass * grav;
-        Feval[2] = fz;
-      }
+      Feval[2] = this->eval( std::abs(U[2]) );
     }
   };
 
@@ -77,6 +79,7 @@ int main( int argc, char* argv[] )
    * parse settings from config yaml
    */
   const ts::Settings settings = ts::yaml::parse(yamlFile);
+  ts::yaml::Parser::dump(std::cout,settings);
   
   /*
    * instantiate dummy solver with point cloud

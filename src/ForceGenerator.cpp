@@ -17,6 +17,7 @@
 // system ----------------------------------------------------------------------
 #include <algorithm>
 #include <stdexcept>
+#include <format>
 
 // own -------------------------------------------------------------------------
 #include "ForceGenerator.hpp"
@@ -86,7 +87,8 @@ namespace ts {
   {
     if( fieldname != "Displacements" && fieldname != "DisplacementDeltas" ) {
       const std::string msg =
-        "ts::ForceGenerator::set::fieldname '" + std::string{fieldname} + "' is invalid";
+        std::format( "ts::ForceGenerator::set::fieldname '{}' is invalid",
+                     fieldname );
       throw std::runtime_error(msg);
     }
     if( fieldname == "Displacement" )
@@ -104,7 +106,8 @@ namespace ts {
   {
     if( fieldname != "Forces" ) {
       const std::string msg =
-        "ts::ForceGenerator::get::fieldname '" + std::string{fieldname} + "' is invalid";
+        std::format( "ts::ForceGenerator::get::fieldname '{}' is invalid",
+                     fieldname );
       throw std::runtime_error(msg);
     }
 
