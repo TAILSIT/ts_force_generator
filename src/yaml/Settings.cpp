@@ -15,6 +15,7 @@
 //! @copyright TailSiT GmbH
 
 // own -------------------------------------------------------------------------
+#include "../types.hpp"
 #include "Settings.hpp"
 
 //------------------------------------------------------------------------------
@@ -28,6 +29,8 @@ namespace YAML {
     node["meshName"]   = settings.meshName;
     node["inField"]    = settings.inField;
     node["outField"]   = settings.outField;
+    node["dt"]         = settings.dt;
+    node["endt"]       = settings.endt;
     return node;
   }
     
@@ -38,6 +41,8 @@ namespace YAML {
     settings.meshName   = node["meshName"].as<std::string>();
     settings.inField    = node["inField"].as<std::string>();
     settings.outField   = node["outField"].as<std::string>();
+    settings.dt         = node["dt"].as<ts::Real>();
+    settings.endt       = node["endt"].as<ts::Real>();
     return true;
   }
   
