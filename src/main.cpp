@@ -48,7 +48,8 @@ namespace app {
       const auto scale =  2./(1.+e1) - 1./(1.+e2) - 1./(1.+e3);
       static constexpr ts::Real m = 6e-3;
       static constexpr ts::Real g = 9.81;
-      return m*g*scale;
+      //return m*g*scale;
+      return 0;
     }
     
     void operator()( ts::Real                      time,
