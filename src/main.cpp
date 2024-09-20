@@ -21,6 +21,7 @@
 #include <format>
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 // preCICE ---------------------------------------------------------------------
 #include <precice/precice.hpp>
@@ -66,12 +67,19 @@ namespace app {
 //------------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
+  const std::filesystem::path appname = std::filesystem::path{ argv[0] }.filename();
   if( argc != 4 ) {
-    std::cerr << "usage: " << std::filesystem::path(argv[0]).filename().string() << " coords.csv settings-precice.xml config.yaml"
+    std::cerr << "usage: " << appname.string()
+              << " coords.csv settings-precice.xml config.yaml"
               << std::endl;
     std::exit( EXIT_FAILURE );
   }
 
+  /*
+   * start timing
+   */
+  const auto startTime = std::chrono::high_resolution_clock::now();
+  
   /*
    * set filenames
    */
@@ -173,5 +181,12 @@ int main( int argc, char* argv[] )
   /*
    * done
    */
+  const auto endTime = std::chrono::high_resolution_clock::now();
+  using Seconds = std::ratio<1>;
+  const std::chrono::duration<ts::Real,Seconds> diff = endTime - startTime;
+  std::cout << std::format( "{}: Total runtime = {}\n",
+                            appname.string(),
+                            diff );
+                            
   return EXIT_SUCCESS;
 }
