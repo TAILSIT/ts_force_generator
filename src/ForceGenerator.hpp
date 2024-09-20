@@ -20,6 +20,7 @@
 #include <array>
 #include <vector>
 #include <memory>
+#include <string>
 
 // own -------------------------------------------------------------------------
 #include "types.hpp"
@@ -36,6 +37,9 @@ namespace ts {
 class ts::ForceGenerator
 {
   static constexpr Int dimMesh_ = 3;
+  static constexpr std::string_view strDisplacements_      = "Displacements";
+  static constexpr std::string_view strDisplacementDeltas_ = "DisplacementDeltas";
+  static constexpr std::string_view strForces_             = "Forces";
   
 private:
   std::vector<Real>         coords_;

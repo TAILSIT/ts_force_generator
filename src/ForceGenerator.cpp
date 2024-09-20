@@ -97,26 +97,25 @@ namespace ts {
   void ForceGenerator::set( std::string_view fieldname,
                             std::span<const Real> displacements )
   {
-    if( fieldname != "Displacements" && fieldname != "DisplacementDeltas" ) {
-      const std::string msg =
-        std::format( "ts::ForceGenerator::set::fieldname '{}' is invalid",
-                     fieldname );
-      throw std::runtime_error(msg);
-    }
-    if( fieldname == "Displacement" )
+    if( fieldname == strDisplacements_ )
       std::ranges::copy( displacements, currentDisplacements_.begin() );
-    else
+    else if( fieldname == strDisplacementDeltas_ )
       std::ranges::transform( displacements,
                               currentDisplacements_,
                               currentDisplacements_.begin(),
                               []( auto dU, auto Unm1 ) { return dU + Unm1; } );
+    else {
+      const std::string msg = std::format( "ts::ForceGenerator::set:Invalid fieldname '{}'",
+                                           fieldname );
+      throw std::runtime_error(msg);
+    }
   }
 
   //----------------------------------------------------------------------------
   void ForceGenerator::get( std::string_view fieldname,
                             std::span<Real>  forces ) const
   {
-    if( fieldname != "Forces" ) {
+    if( fieldname != strForces_ ) {
       const std::string msg =
         std::format( "ts::ForceGenerator::get::fieldname '{}' is invalid",
                      fieldname );

@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 settings:
   monitor:
-    active: true
+    active: false
   solver:
     type: RBD
     name: rbd_solver
