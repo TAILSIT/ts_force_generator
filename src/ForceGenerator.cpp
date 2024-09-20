@@ -54,7 +54,7 @@ namespace ts {
     if( !(samplingForce_ -> samples).empty() ) {
       const auto& samples = samplingForce_ -> samples;
       std::ofstream out(csvOut.data());
-      out << std::format("#{:>14s} {:>15s} {:>15s} {:>15s} {:>15s} {:>15s}\n",
+      out << std::format("#{:>13s},{:>14s},{:>14s},{:>14s},{:>14s},{:>14s}\n",
                          "U0", "U1", "U2", "F0", "F1", "F2");
       for( const auto& row : samples ) {
         out << std::format( "{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e}\n",
