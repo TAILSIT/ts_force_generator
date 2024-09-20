@@ -1,0 +1,22 @@
+# ============================================================
+# SETTINGS: 
+# ------------------------------------------------------------
+settings:
+  monitor:
+    active: true
+  solver:
+    type: RBD
+    name: rbd_solver
+  meshes:
+    - meshName: Magnet
+      partId: 101
+      dimWorld: 3
+      dimMesh: 3
+      coupling:
+        incoming:
+          - name: Forces
+            dim: 3
+        outgoing:
+          - name: Displacements
+            dim: 3
+# ============================================================

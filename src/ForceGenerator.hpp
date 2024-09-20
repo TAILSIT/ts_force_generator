@@ -43,7 +43,7 @@ private:
   Settings                  settings_;
   Real                      currentTime_;
   std::array<Real,dimMesh_> solution_; // well, not really a solution just the evaluated force
-
+  
   struct SavedState_
   {
     std::vector<Real>         displacements;
@@ -51,6 +51,15 @@ private:
     Real                      time;
   };
   std::unique_ptr<SavedState_> previousState_;
+
+  struct SamplingForce_
+  {
+    using Row = std::array< Real,6 >;
+    using Table = std::vector<Row>;
+
+    Table samples;
+  };
+  std::unique_ptr<SamplingForce_> samplingForce_;
   
 public:
   ForceGenerator( std::span<const Real> coords,
@@ -73,7 +82,7 @@ public:
   Real beginTimeStep( );
   
   template< typename FORCE >
-  void solveTimeStep( FORCE&& force );
+  void solveTimeStep( FORCE&& force, bool sampleForce = false );
 
   void endTimeStep( );
   //@}
@@ -105,11 +114,15 @@ public:
 //
 //============================================================================
 template< typename FORCE >
-void ts::ForceGenerator::solveTimeStep( FORCE&& force ) 
+void ts::ForceGenerator::solveTimeStep( FORCE&& force, bool sampleForce ) 
 {
   // this is all about rigid body movement (without rotations!)
   // Thus, the very first displacement is as good as any other
   auto U = std::span<const Real,3>{ currentDisplacements_.data(), dimMesh_ };
   force( currentTime_, U, solution_ );
+  if( sampleForce ) {
+    auto& samples = samplingForce_ -> samples;
+    samples.push_back( { U[0], U[1], U[2], solution_[0], solution_[1], solution_[2] } );
+  }
 }
 

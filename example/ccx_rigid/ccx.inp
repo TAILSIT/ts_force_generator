@@ -16,10 +16,8 @@ Volume7
 Volume8
 Volume9
 
-*NSET, NSET=NmagnetSurfaceN
-North
-South
-Coating
+*NSET, NSET=NmagnetSurface
+Magnet
 
 *SOLID SECTION, ELSET=MagnetVol, MATERIAL=RigidBodyMat
 
@@ -34,12 +32,12 @@ Coating
 MagnetVol, GRAV, 9.81, 0.0, 0.0, -1.0 
 
 *CLOAD
-NmagnetSurfaceN, 1, 0.0
-NmagnetSurfaceN, 2, 0.0
-NmagnetSurfaceN, 3, 0.0
+NmagnetSurface, 1, 0.0
+NmagnetSurface, 2, 0.0
+NmagnetSurface, 3, 0.0
 
 *DYNAMIC, DIRECT
-5e-3, 3e-1
+5e-4, 3e-1
 
 *NODE FILE
 U, V, RF

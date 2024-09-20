@@ -7,7 +7,7 @@
   <!--
       DECLARE COUPLING MESHES
   -->
-  <mesh name="magnetSurface" dimensions="3">
+  <mesh name="Magnet" dimensions="3">
     <use-data name="Displacements"/>
     <use-data name="Forces"/>
   </mesh>
@@ -34,48 +34,48 @@
     <!--
         MAKE MESHES FROM OTHER SOLVER VISIBLE
     -->
-    <receive-mesh name="magnetSurface" from="ccx"/>
+    <receive-mesh name="Magnet" from="rbd_solver"/>
     <!--
         DEFINE DATA MAPPING 
     -->
-    <mapping:nearest-neighbor direction="read" from="magnetSurface"
+    <mapping:nearest-neighbor direction="read" from="Magnet"
                               to="dummy_magnet" constraint="consistent"/>
     <mapping:nearest-neighbor direction="write" from="dummy_magnet"
-                              to="magnetSurface" constraint="conservative"/>
+                              to="Magnet" constraint="conservative"/>
   </participant>
   <!--
       OUR SECOND PARTICIPANT: THE RIGID BODY SOLVER
   -->    
-  <participant name="ccx">
+  <participant name="rbd_solver">
     <!--
         ONE REGION (magnet) -> TWO GRIDS!!!
     -->
-    <provide-mesh name="magnetSurface"/>
+    <provide-mesh name="Magnet"/>
     
     <!--
         THE RBD SOLVER WRITES ITS DATA TO THE VOLUME MESHES
     -->
-    <write-data name="Displacements" mesh="magnetSurface"/>
+    <write-data name="Displacements" mesh="Magnet"/>
     <!--
         ...AND READS THE FORCES ONTO ITS SURFACES
     -->
-    <read-data name="Forces" mesh="magnetSurface"/>
+    <read-data name="Forces" mesh="Magnet"/>
   </participant>
   <!--
       SET UP THE COMMUNICATION CHANNEL BETWEEN THESE TWO PARTICIPANTS
   -->
-  <m2n:sockets acceptor="ts_dummy_adapter" connector="ccx" exchange-directory="../"/>
+  <m2n:sockets acceptor="ts_dummy_adapter" connector="rbd_solver" exchange-directory="../"/>
   <!--
       FINALLY: THE COUPLING SCHEME
   -->
   <coupling-scheme:serial-explicit>
-    <participants first="ts_dummy_adapter" second="ccx"/>
+    <participants first="ts_dummy_adapter" second="rbd_solver"/>
     <max-time-windows value="1000"/>
-    <time-window-size value="5e-3"/>
+    <time-window-size value="5e-4"/>
     <max-time value="3e-1"/>
-    <exchange data="Forces" mesh="magnetSurface"
-              from="ts_dummy_adapter" to="ccx"/>
-    <exchange data="Displacements" mesh="magnetSurface"
-              from="ccx" to="ts_dummy_adapter"/>
+    <exchange data="Forces" mesh="Magnet"
+              from="ts_dummy_adapter" to="rbd_solver"/>
+    <exchange data="Displacements" mesh="Magnet"
+              from="rbd_solver" to="ts_dummy_adapter"/>
   </coupling-scheme:serial-explicit>
 </precice-configuration>

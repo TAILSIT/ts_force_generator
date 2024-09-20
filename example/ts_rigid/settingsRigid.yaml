@@ -1,0 +1,82 @@
+# ============================================================
+# SETTINGS: 
+# ------------------------------------------------------------
+settings:
+  parts:
+    - name: Tube
+      id: 100
+      regionIds: [1]
+    - name: Magnet
+      id: 101
+      regionIds: [2]
+  materials:
+    comment: Densities in kg/m^3
+    densities:
+      - comment: Copper
+        id: 200
+        density: 8920
+        partIds:
+          - 100
+      - comment: "Neodym[Fake]"
+        id: 201
+        density: 3729.5
+        partIds:
+          - 101
+  loads:
+    comment: Only magnet is subjected to a force (gravitational). No torques
+    forces:
+      - partIds:
+          - 101
+        vectorField:
+          comment: "Weight of magnet: m=3g, Fz = -mg"
+          id: 300
+          coordSystem: Cart
+          center: [0, 0, 0]
+          axis: [0, 0, 1]
+          value: [0, 0, -2.943e-2]
+        timeId: 400
+    torques:
+      []
+  couplingForces:
+    - comment: "Constrain coupling force such that only the z-component remains"
+      partIds:
+        - 101
+      constraint: "110"
+  dataFuns:
+    dataCurves:
+      []
+    timeFuns:
+      - comment: Gravitational force is always active
+        id: 400
+        type: constant
+        value: 1
+  initialStates:
+    - comment: Everything is at rest in the beginning
+      id: 500
+      partIds: [100, 101]
+      shift: [0, 0, 0]
+      velocity: [0, 0, 0]
+      axis: [0, 0, 1]
+      omega: [0, 0, 0]
+      angle: 0
+  timeIntegrator:
+    comment: Time in s. method='ExplicitEuler' also possible.
+    timeStepSize: 5e-4
+    endTime: 3e-1
+    maxNumSteps: 1000
+    method: ExplicitEuler
+  collision:
+    restitution: 0
+    penetrationTolerance: 0.0001
+    maxTrials: 20
+  general:
+    verbose: true
+    quadratureOrder: 2
+  postProc:
+    outputFrequency: 1
+    vtkhdf:
+      active: true
+      isSinglePrec: true
+      isGZip: true
+      isSZip: false
+# ============================================================

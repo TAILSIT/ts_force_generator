@@ -3,6 +3,6 @@ settings:
   meshName: "dummy_magnet"
   inField: "Displacements"
   outField: "Forces"
-  dt: 5.e-3
+  dt: 5.e-4
   endt: 3.e-1
 

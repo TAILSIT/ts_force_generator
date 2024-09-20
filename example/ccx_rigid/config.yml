@@ -1,7 +1,7 @@
 participants:
-  ccx:
+  rbd_solver:
     interfaces:
-      - nodes-mesh: magnetSurface
+      - nodes-mesh: Magnet
         patch: magnetSurface
         read-data: [Forces]
         write-data: [Displacements]

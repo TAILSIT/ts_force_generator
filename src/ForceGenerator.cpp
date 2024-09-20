@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <format>
+#include <fstream>
 
 // own -------------------------------------------------------------------------
 #include "ForceGenerator.hpp"
@@ -34,6 +35,7 @@ namespace ts {
     , currentTime_(0)
     , solution_()
     , previousState_(nullptr)
+    , samplingForce_( std::make_unique<SamplingForce_>() )
   {
     // empty
   }
@@ -48,7 +50,17 @@ namespace ts {
   //----------------------------------------------------------------------------
   void ForceGenerator::stop( )
   {
-    // nothing to do here...
+    static constexpr std::string_view csvOut = "forces.csv";
+    if( !(samplingForce_ -> samples).empty() ) {
+      const auto& samples = samplingForce_ -> samples;
+      std::ofstream out(csvOut.data());
+      out << std::format("#{:>14s} {:>15s} {:>15s} {:>15s} {:>15s} {:>15s}\n",
+                         "U0", "U1", "U2", "F0", "F1", "F2");
+      for( const auto& row : samples ) {
+        out << std::format( "{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e},{:>14.7e}\n",
+                            row[0], row[1], row[2], row[3], row[4], row[5] );
+      }
+    }
   }
 
   //----------------------------------------------------------------------------

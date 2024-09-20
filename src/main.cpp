@@ -45,7 +45,10 @@ namespace app {
       const auto e1 = std::exp(20. - 1000.*s);
       const auto e2 = std::exp(25. - 1000.*s);
       const auto e3 = std::exp(85. - 1000.*s);
-      return 2./(1.+e1) - 1./(1.+e2) - 1./(1.+e3);
+      const auto scale =  2./(1.+e1) - 1./(1.+e2) - 1./(1.+e3);
+      static constexpr ts::Real m = 6e-3;
+      static constexpr ts::Real g = 9.81;
+      return m*g*scale;
     }
     
     void operator()( ts::Real                      time,
@@ -138,7 +141,8 @@ int main( int argc, char* argv[] )
     solver.set( settings.inField, displacementBuffer );
 
     // 'solve' for this time step
-    solver.solveTimeStep( force );
+    const bool sampleForce = true;
+    solver.solveTimeStep( force, sampleForce );
 
     // fetch forces on points from solver
     solver.get( settings.outField, forcesBuffer );
